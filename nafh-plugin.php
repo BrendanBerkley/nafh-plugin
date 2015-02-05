@@ -14,10 +14,19 @@ class Signup_Widget extends WP_Widget {
 	}
 function form($instance) {
 		// outputs the options form on admin
-		$title = esc_attr($instance['title']);
-		$desc = esc_attr($instance['desc']); 
-		$page_to_link = esc_attr($instance['page_to_link']);
-		$link_text = esc_attr($instance['link_text']);
+		$title = $desc = $page_to_link = $link_text = "";
+		if (isset($instance['title'])) :
+			$title = esc_attr($instance['title']);
+		endif;
+		if (isset($instance['desc'])) :
+			$desc = esc_attr($instance['desc']);
+		endif;
+		if (isset($instance['page_to_link'])) :
+			$page_to_link = esc_attr($instance['page_to_link']);
+		endif;
+		if (isset($instance['link_text'])) :
+			$link_text = esc_attr($instance['link_text']);
+		endif;
 
 		echo '<p><label for="' . $this->get_field_id('title') . '">Title:</label> <input class="widefat" id="' . $this->get_field_id('title') . '" name="'. $this->get_field_name('title') .'" type="text" value="'. $title. '" /></p>';
 
