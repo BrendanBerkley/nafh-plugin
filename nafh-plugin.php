@@ -15,21 +15,16 @@ class Signup_Widget extends WP_Widget {
 function form($instance) {
 		// outputs the options form on admin
 		$title = $subtitle = $desc = $page_to_link = $button_text = "";
-		if (isset($instance['title'])) :
+		if (isset($instance['title']))
 			$title = esc_attr($instance['title']);
-		endif;
-		if (isset($instance['subtitle'])) :
+		if (isset($instance['subtitle']))
 			$subtitle = esc_attr($instance['subtitle']);
-		endif;
-		if (isset($instance['desc'])) :
+		if (isset($instance['desc']))
 			$desc = esc_attr($instance['desc']);
-		endif;
-		if (isset($instance['page_to_link'])) :
+		if (isset($instance['page_to_link']))
 			$page_to_link = esc_attr($instance['page_to_link']);
-		endif;
-		if (isset($instance['button_text'])) :
+		if (isset($instance['button_text']))
 			$button_text = esc_attr($instance['button_text']);
-		endif;
 
 		echo '<p><label for="' . $this->get_field_id('title') . '">Title:</label> <input class="widefat" id="' . $this->get_field_id('title') . '" name="'. $this->get_field_name('title') .'" type="text" value="'. $title. '" /></p>';
 
@@ -107,13 +102,15 @@ function widget($args, $instance) {
 
 		// before and after widget arguments are defined by themes
 		echo $args['before_widget'];
+
 		if ( ! empty( $title ) )
 		echo $args['before_title'] . $title . $args['after_title'];
 		
-		 
-		// This is where you run the code and display the output
-		echo '<div class="signup-section-subtitle">' . $subtitle . '</div>';
-		echo '<p class="signup-section-desc">' . $desc . '</p>';
+		if ( ! empty( $subtitle ) )
+		echo '<h3 class="signup-section-subtitle">' . $subtitle . '</h3>';
+		
+		if ( ! empty( $desc ) )
+		echo '<div class="signup-section-desc">' . $desc . '</div>';
 
 		// Output button with proper class and href
 		$button_state = " disabled";
