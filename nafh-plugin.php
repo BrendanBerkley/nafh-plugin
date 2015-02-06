@@ -103,8 +103,19 @@ function widget($args, $instance) {
 		// before and after widget arguments are defined by themes
 		echo $args['before_widget'];
 
-		if ( ! empty( $title ) )
-		echo $args['before_title'] . $title . $args['after_title'];
+		if ( ! empty( $title ) ) :
+			// These next three lines find the last space and replace it with a
+			// non-breaking space, if there is more than one space. Type matters!
+			if (substr_count($title, " ") > 1) :
+				$last_space_pos = strripos($title, " ");
+				$end_of_title   = substr($title, $last_space_pos+1);
+				$better_title   = substr_replace($title, "&nbsp;".$end_of_title, $last_space_pos);
+			else:
+				$better_title   = $title;
+			endif;
+
+			echo $args['before_title'] . $better_title . $args['after_title'];
+		endif;
 		
 		if ( ! empty( $subtitle ) )
 		echo '<h3 class="signup-section-subtitle">' . $subtitle . '</h3>';
