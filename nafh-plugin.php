@@ -14,9 +14,12 @@ class Signup_Widget extends WP_Widget {
 	}
 function form($instance) {
 		// outputs the options form on admin
-		$title = $desc = $page_to_link = $link_text = "";
+		$title = $subtitle = $desc = $page_to_link = $link_text = "";
 		if (isset($instance['title'])) :
 			$title = esc_attr($instance['title']);
+		endif;
+		if (isset($instance['subtitle'])) :
+			$subtitle = esc_attr($instance['subtitle']);
 		endif;
 		if (isset($instance['desc'])) :
 			$desc = esc_attr($instance['desc']);
@@ -30,9 +33,11 @@ function form($instance) {
 
 		echo '<p><label for="' . $this->get_field_id('title') . '">Title:</label> <input class="widefat" id="' . $this->get_field_id('title') . '" name="'. $this->get_field_name('title') .'" type="text" value="'. $title. '" /></p>';
 
+		echo '<p><label for="' . $this->get_field_id('subtitle') . '">Subtitle:</label> <input class="widefat" id="' . $this->get_field_id('subtitle') . '" name="'. $this->get_field_name('subtitle') .'" type="text" value="'. $subtitle. '" /></p>';
+
 		echo '<p><label for="' . $this->get_field_id('desc') . '">Description:</label> <textarea class="widefat" id="' . $this->get_field_id('desc') . '" name="'. $this->get_field_name('desc') .'" type="text">'. $desc. '</textarea></p>';
 
-		echo '<p><label for="'. $this->get_field_id('page_to_link').'"Page to link to:</label><select class="widefat" id="'. $this->get_field_id('page_to_link').'" name="'. $this->get_field_name('page_to_link') . '">';
+		echo '<p><label for="'. $this->get_field_id('page_to_link').'">Registration page to link to:</label><select class="widefat" id="'. $this->get_field_id('page_to_link').'" name="'. $this->get_field_name('page_to_link') . '">';
 		
 		echo '<option value="-1">No Link</option>';
 
@@ -79,10 +84,10 @@ function update($new_instance, $old_instance) {
 function widget($args, $instance) {
 		// outputs the content of the widget
 		$title = apply_filters( 'widget_title', $instance['title'] );
+		$subtitle = apply_filters( 'widget_text', $instance['subtitle'] );
 		$desc = apply_filters( 'widget_text', $instance['desc'] );
 		$page_to_link = apply_filters( 'widget_text', $instance['page_to_link'] );
 		$link_text = apply_filters( 'widget_text', $instance['link_text'] );
-		$space_adjust = "";
 
 		if ($link_text == "") :
 			$link_text = "Visit the ". get_the_title($page_to_link) ." page to learn more&nbsp;&raquo;";
@@ -92,23 +97,12 @@ function widget($args, $instance) {
 		echo $args['before_widget'];
 		if ( ! empty( $title ) )
 		echo $args['before_title'] . $title . $args['after_title'];
+		
 		 
 		// This is where you run the code and display the output
-		if ( ! empty( $desc ) ) :
-			if ( empty( $title) ) :
-				$space_adjust = " space-adjust";
-			endif;
-
-			echo '<p class="widget-text'.$space_adjust.'">' . $desc . '</p>';
-		endif;
-
-		if ($page_to_link != -1) :
-			if ( empty( $title) && empty( $desc ) ) :
-				$space_adjust = " space-adjust";
-			endif;
-
-			echo '<p class="widget-link'.$space_adjust.'"><a href="'. get_permalink( $page_to_link ) .'">'. $link_text .'</a></p>';
-		endif;
+		echo '<div class="signup-section-subtitle">' . $subtitle . '</div>';
+		echo '<p class="signup-section-desc">' . $desc . '</p>';
+		echo '<a class="signup-section-button enabled" href="'. get_permalink( $page_to_link ) .'">'. $link_text .'</a>';
 
 		echo $args['after_widget'];
 		
