@@ -77,12 +77,16 @@ function form($instance) {
 		$button_labels = array("Sign Up Soon!", "Sign Up Now!", "Signup Closed");
 
 		echo '<p><label for="' . $this->get_field_id('button_text') . '">Button Text:</label><br />';
+		
 		// Create radio buttons in a loop, for DRYness and to handle the 'checked' option better
+		$first_button_label = $button_labels[0];
+
 		foreach ($button_labels as $button_label) : 
 			$checked = "";
 
-			if ($button_label == $button_text) :
-				$checked = " checked";
+			// If current value = saved value OR if no saved value and we're in the first iteration,
+			if ($button_label == $button_text || ($button_text == "" && $first_button_label == $button_label)) : 
+				$checked = " checked"; // set the next input to be checked.
 			endif;
 
 			echo '<input type="radio" id="' . $this->get_field_id('button_text') . '" name="'. $this->get_field_name('button_text') .'" value="' . $button_label . '"'. $checked .' /> ' . $button_label . '<br />';
