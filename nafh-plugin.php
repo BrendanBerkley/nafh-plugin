@@ -142,4 +142,94 @@ function widget($args, $instance) {
 add_action('widgets_init', create_function('', 'return register_widget("Signup_Widget");'));
 //register_widget('Signup_Widget');
 
+
+
+
+
+
+
+
+
+// I want PayPal buttons to be manageable from admin. My old workflow was to copy and paste button text 
+// into functions.php, creating a shortcode that I could then plug in to a post. I'd like to keep it simple - 
+// set up the buttons in PayPal still, but not have to edit a PHP file to make 'em work here.
+// add_action( 'init', 'create_post_type' );
+// function create_post_type() {
+//   register_post_type( 'ppbs_generator',
+//     array(
+//       'labels' => array(
+//         'name' => __( 'PayPal Buttons' ),
+//         'singular_name' => __( 'PayPal Button' ),
+//         'name_admin_bar' => __( 'PayPal Button' ),
+//         'add_new' => __( 'Add New Button' ),
+//         'add_new_item' => __( 'Add New PayPal Button' ),
+//         'edit_item' => __( 'Edit PayPal Button' ),
+//         'view_item' => __( 'View PayPal Buttons' ),
+//         'not_found' => __( 'No buttons found.' ),
+//         'new_item' => __( 'New PayPal Button' )
+//       ),
+//       'public' => true,
+//       'has_archive' => false,
+//       'exclude_from_search' => false,
+//       'publicly_queryable' => false,
+//       'show_in_nav_menus' => false,
+//       'menu_icon' => 'dashicons-cart',
+//       'supports' => array(
+//       	  'title'
+//       	)
+//     )
+//   );
+// }
+
+
+
+// // function ppbs_generator_meta_box_setup() {
+// add_action( 'add_meta_boxes', 'ppbs_generator_box' );
+// function ppbs_generator_box() {
+// 	add_meta_box( 
+// 		'ppbs_generator_box',
+// 		'Button Info',
+// 		'ppbs_generator_box_content',
+// 		'ppbs_generator',
+// 		'normal',
+// 		'high'
+// 	);
+// }
+// // }
+
+// function ppbs_generator_box_content( $post ) {
+// 	wp_nonce_field( plugin_basename( __FILE__ ), 'ppbs_generator_box_content_nonce' );
+// 	echo '<p>';
+// 	echo '<label for="ppbs_shortcode_name">Shortcode name: </label>';
+// 	echo '<input type="text" id="ppbs_shortcode_name" name="ppbs_shortcode_name" placeholder="use-hyphens-not-spaces" class="widefat" />';
+// 	echo '</p>';
+// 	echo '<p>';
+// 	echo '<label for="ppbs_button_text">Button HTML: </label>';
+// 	echo '<textarea id="ppbs_button_text" name="ppbs_button_text" class="widefat" ></textarea>';
+// 	echo '</p>';
+// }
+
+// add_action( 'save_post', 'ppbs_generator_box_save' );
+// function ppbs_generator_box_save( $post_id ) {
+
+//   if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) 
+//   return;
+
+//   if ( !wp_verify_nonce( $_POST['ppbs_generator_box_content_nonce'], plugin_basename( __FILE__ ) ) )
+//   return;
+
+//   if ( 'page' == $_POST['post_type'] ) {
+//     if ( !current_user_can( 'edit_page', $post_id ) )
+//     return;
+//   } else {
+//     if ( !current_user_can( 'edit_post', $post_id ) )
+//     return;
+//   }
+//   $ppbs_shortcode_name = $_POST['ppbs_shortcode_name'];
+//   update_post_meta( $post_id, 'ppbs_shortcode_name', $ppbs_shortcode_name );
+  
+//   $ppbs_button_text = $_POST['ppbs_button_text'];
+//   update_post_meta( $post_id, 'ppbs_button_text', $ppbs_button_text );
+
+// }
 ?>
