@@ -25,6 +25,8 @@ function form($instance) {
 			$page_to_link = esc_attr($instance['page_to_link']);
 		if (isset($instance['button_text']))
 			$button_text = esc_attr($instance['button_text']);
+		if (isset($instance['matching_event_category']))
+			$matching_event_category = esc_attr($instance['matching_event_category']);
 
 		echo '<p><label for="' . $this->get_field_id('title') . '">Title:</label> <input class="widefat" id="' . $this->get_field_id('title') . '" name="'. $this->get_field_name('title') .'" type="text" value="'. $title. '" /></p>';
 
@@ -87,6 +89,28 @@ function form($instance) {
 			echo '<input type="radio" id="' . $this->get_field_id('button_text') . '" name="'. $this->get_field_name('button_text') .'" value="' . $button_label . '"'. $checked .' /> ' . $button_label . '<br />';
 		endforeach;
 
+		// List event categories if they're available. This will let each signup link to an upcoming schedule.
+		$event_categories = get_terms( 'event-categories' );
+		if ( ! empty( $event_categories ) && ! is_wp_error( $event_categories ) ) :
+			$ec_selected_text = "";
+
+			echo '<p><label for="'. $this->get_field_id('matching_event_category').'">Matching Event Category:</label><select class="widefat" id="'. $this->get_field_id('matching_event_category').'" name="'. $this->get_field_name('matching_event_category') . '">';
+
+			echo '<option value="-1">None</option>';
+
+			foreach ( $event_categories as $event_category ) :
+				if ($event_category->term_id == $matching_event_category) :
+					$ec_selected_text = ' selected="selected"';
+				endif;
+
+				echo '<option value="' . $event_category->term_id . '"' . $ec_selected_text . '>' . $event_category->name . '</option>';
+
+				$ec_selected_text = '';
+			endforeach;
+
+			echo '</select></p>';
+		endif;
+
 	}
 function update($new_instance, $old_instance) {
 		// processes widget options to be saved
@@ -99,6 +123,7 @@ function widget($args, $instance) {
 		$desc = apply_filters( 'widget_text', $instance['desc'] );
 		$page_to_link = apply_filters( 'widget_text', $instance['page_to_link'] );
 		$button_text = apply_filters( 'widget_text', $instance['button_text'] );
+		$matching_event_category = apply_filters( 'widget_text', $instance['matching_event_category'] );
 
 		// before and after widget arguments are defined by themes
 		echo $args['before_widget'];
@@ -133,6 +158,21 @@ function widget($args, $instance) {
 		endif;
 
 		echo '<a class="signup-section-button' . $button_state . '" href="'. $button_href .'">'. $button_text .'</a>';
+
+		if ($matching_event_category != "-1") :
+			$event_categories = get_terms( 'event-categories' );
+			$event_category_href = "";
+
+			if ( ! empty( $event_categories ) && ! is_wp_error( $event_categories ) ) :
+				foreach ( $event_categories as $event_category ) :
+					if ($matching_event_category == $event_category->term_id ) :
+						$event_category_href = get_term_link($event_category);
+					endif;
+				endforeach;
+			endif;
+
+			echo '<a class="link-to-events" href="'. $event_category_href .'">View Events &raquo;</a>';
+		endif;
 
 		echo $args['after_widget'];
 		
