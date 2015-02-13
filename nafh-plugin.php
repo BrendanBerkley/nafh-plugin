@@ -13,8 +13,12 @@ class Signup_Widget extends WP_Widget {
 		parent::WP_Widget(false, 'Signup');
 	}
 function form($instance) {
-		// outputs the options form on admin
-		$title = $subtitle = $desc = $page_to_link = $button_text = "";
+		// Outputs the options form on admin
+
+		// Define blank variables
+		$title = $subtitle = $desc = $page_to_link = $button_text = $matching_event_category = $visible_on_site = "";
+
+		// If saved values exist, pull 'em.
 		if (isset($instance['title']))
 			$title = esc_attr($instance['title']);
 		if (isset($instance['subtitle']))
@@ -27,7 +31,10 @@ function form($instance) {
 			$button_text = esc_attr($instance['button_text']);
 		if (isset($instance['matching_event_category']))
 			$matching_event_category = esc_attr($instance['matching_event_category']);
+		if (isset($instance['visible_on_site']))
+			$visible_on_site = esc_attr($instance['visible_on_site']);
 
+		// Output widget form fields.
 		echo '<p><label for="' . $this->get_field_id('title') . '">Title:</label> <input class="widefat" id="' . $this->get_field_id('title') . '" name="'. $this->get_field_name('title') .'" type="text" value="'. $title. '" /></p>';
 
 		echo '<p><label for="' . $this->get_field_id('subtitle') . '">Subtitle:</label> <input class="widefat" id="' . $this->get_field_id('subtitle') . '" name="'. $this->get_field_name('subtitle') .'" type="text" value="'. $subtitle. '" /></p>';
@@ -109,6 +116,13 @@ function form($instance) {
 			endforeach;
 
 			echo '</select></p>';
+
+			$visible_box_checked = "";
+			if ($visible_on_site == "visible") :
+				$visible_box_checked = " checked";
+			endif;
+			echo '<p><input id="' . $this->get_field_id('visible_on_site') . '" name="' . $this->get_field_name('visible_on_site') . '" type="checkbox" value="visible"'. $visible_box_checked .' /><label for="' . $this->get_field_id('visible_on_site') . '">Visible on site?</label><br /></p>';
+			
 		endif;
 
 	}
@@ -124,57 +138,66 @@ function widget($args, $instance) {
 		$page_to_link = apply_filters( 'widget_text', $instance['page_to_link'] );
 		$button_text = apply_filters( 'widget_text', $instance['button_text'] );
 		$matching_event_category = apply_filters( 'widget_text', $instance['matching_event_category'] );
+		
+		if (isset($instance['visible_on_site'])) :
+			$visible_on_site = apply_filters( 'widget_text', $instance['visible_on_site'] );
+		else:
+			$visible_on_site = "";
+		endif;
 
-		// before and after widget arguments are defined by themes
-		echo $args['before_widget'];
 
-		if ( ! empty( $title ) ) :
-			// These next three lines find the last space and replace it with a
-			// non-breaking space, if there is more than one space. Type matters!
-			if (substr_count($title, " ") > 1) :
-				$last_space_pos = strripos($title, " ");
-				$end_of_title   = substr($title, $last_space_pos+1);
-				$better_title   = substr_replace($title, "&nbsp;".$end_of_title, $last_space_pos);
-			else:
-				$better_title   = $title;
+		if ($visible_on_site == "visible") :
+			// before and after widget arguments are defined by themes
+			echo $args['before_widget'];
+
+			if ( ! empty( $title ) ) :
+				// These next three lines find the last space and replace it with a
+				// non-breaking space, if there is more than one space. Type matters!
+				if (substr_count($title, " ") > 1) :
+					$last_space_pos = strripos($title, " ");
+					$end_of_title   = substr($title, $last_space_pos+1);
+					$better_title   = substr_replace($title, "&nbsp;".$end_of_title, $last_space_pos);
+				else:
+					$better_title   = $title;
+				endif;
+
+				echo $args['before_title'] . $better_title . $args['after_title'];
+			endif;
+			
+			if ( ! empty( $subtitle ) )
+			echo '<h3 class="signup-section-subtitle">' . $subtitle . '</h3>';
+			
+			if ( ! empty( $desc ) )
+			echo '<div class="signup-section-desc">' . $desc . '</div>';
+
+			// Output button with proper class and href
+			$button_state = " disabled";
+			$button_href  = " javascript:void(0);";
+
+			if ($button_text == "Sign Up Now!") :
+				$button_state = " enabled";
+				$button_href  = get_permalink( $page_to_link );
 			endif;
 
-			echo $args['before_title'] . $better_title . $args['after_title'];
-		endif;
-		
-		if ( ! empty( $subtitle ) )
-		echo '<h3 class="signup-section-subtitle">' . $subtitle . '</h3>';
-		
-		if ( ! empty( $desc ) )
-		echo '<div class="signup-section-desc">' . $desc . '</div>';
+			echo '<a class="signup-section-button' . $button_state . '" href="'. $button_href .'">'. $button_text .'</a>';
 
-		// Output button with proper class and href
-		$button_state = " disabled";
-		$button_href  = " javascript:void(0);";
+			if ($matching_event_category != "-1") :
+				$event_categories = get_terms( 'event-categories' );
+				$event_category_href = "";
 
-		if ($button_text == "Sign Up Now!") :
-			$button_state = " enabled";
-			$button_href  = get_permalink( $page_to_link );
-		endif;
+				if ( ! empty( $event_categories ) && ! is_wp_error( $event_categories ) ) :
+					foreach ( $event_categories as $event_category ) :
+						if ($matching_event_category == $event_category->term_id ) :
+							$event_category_href = get_term_link($event_category);
+						endif;
+					endforeach;
+				endif;
 
-		echo '<a class="signup-section-button' . $button_state . '" href="'. $button_href .'">'. $button_text .'</a>';
-
-		if ($matching_event_category != "-1") :
-			$event_categories = get_terms( 'event-categories' );
-			$event_category_href = "";
-
-			if ( ! empty( $event_categories ) && ! is_wp_error( $event_categories ) ) :
-				foreach ( $event_categories as $event_category ) :
-					if ($matching_event_category == $event_category->term_id ) :
-						$event_category_href = get_term_link($event_category);
-					endif;
-				endforeach;
+				echo '<a class="link-to-events" href="'. $event_category_href .'">View Events &raquo;</a>';
 			endif;
 
-			echo '<a class="link-to-events" href="'. $event_category_href .'">View Events &raquo;</a>';
+			echo $args['after_widget'];
 		endif;
-
-		echo $args['after_widget'];
 		
 	}
 }
